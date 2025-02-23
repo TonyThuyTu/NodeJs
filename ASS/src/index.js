@@ -15,6 +15,8 @@ const PORT = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static('public'));
+
 // 3. Serve static files from "src/public"
 app.use(express.static(path.join(__dirname, 'public')));
 // This resolves to "ASS/src/public" because __dirname is "ASS/src"
