@@ -21,7 +21,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Route mặc định để test Handlebars
 app.get("/", (req, res) => {
-    res.render("pages/home"); // Kiểm tra xem file `home.hbs` có đúng không
+    res.render("user/forgotpass"); // Kiểm tra xem file `home.hbs` có đúng không
 });
 
 // Khởi động server

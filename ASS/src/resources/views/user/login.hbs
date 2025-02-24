@@ -1,36 +1,38 @@
-<div class="container d-flex flex-column justify-content-center align-items-center" style="min-height: 100vh;">
-      <div class="card p-4" style="max-width: 400px; width: 100%;">
-        <h2 class="mb-3 text-center">Login</h2>
-        <!-- Login Form -->
-        <form action="/auth/login" method="POST">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input 
-              type="email" 
-              class="form-control" 
-              id="email" 
-              name="email" 
-              placeholder="Enter your email" 
-              required
-            >
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input 
-              type="password" 
-              class="form-control" 
-              id="password" 
-              name="password" 
-              placeholder="Enter your password" 
-              required
-            >
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Login</button>
-        </form>
-        <!-- Extra Links -->
-        <div class="mt-3 d-flex justify-content-between">
-          <a href="/forgotpass">Forgot Password?</a>
-          <a href="/singnin">Create an Account</a>
-        </div>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="card p-4 shadow-lg" style="max-width: 400px; width: 100%;">
+    <h2 class="mb-4 text-center font-weight-bold">Login</h2>
+    
+    <!-- Login Form -->
+    <form action="/auth/login" method="POST">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          id="email" 
+          name="email" 
+          placeholder="Enter your email" 
+          required
+        >
       </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          class="form-control" 
+          id="password" 
+          name="password" 
+          placeholder="Enter your password" 
+          required
+        >
+      </div>
+      <button type="submit" class="btn btn-primary btn-block mt-3">Login</button>
+    </form>
+    
+    <!-- Extra Links -->
+    <div class="mt-3 d-flex justify-content-between">
+      <a href="/forgotpass" class="text-muted">Forgot Password?</a>
+      <a href="/signin" class="text-primary">Create an Account</a>
     </div>
+  </div>
+</div>
