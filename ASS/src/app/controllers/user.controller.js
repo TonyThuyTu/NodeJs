@@ -16,9 +16,9 @@ exports.show = (req, res) => {
 
 // Tạo user mới
 exports.createUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, phone, email, password } = req.body;
   try {
-    const newUser = new User({ name, email, password });
+    const newUser = new User({ name, phone, email, password });
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {

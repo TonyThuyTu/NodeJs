@@ -1,8 +1,8 @@
 class Post {
-    constructor(_id, title, content) {
+    constructor(_id, title, img) {
       this._id = _id;
       this.title = title;
-      this.content = content;
+      this.img = img;
     }
   
     // Thêm bài viết mới
@@ -10,7 +10,7 @@ class Post {
       try {
         const result = await db.collection("posts").insertOne({
           title: this.title,
-          content: this.content,
+          img: this.img,
         });
         return result;
       } catch (err) {

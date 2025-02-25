@@ -6,4 +6,5 @@ router.get('/', homeController.index);
 router.get('/home', homeController.index);
 router.get('/about', homeController.about);
 
+
 module.exports = router;

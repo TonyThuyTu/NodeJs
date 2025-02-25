@@ -1,38 +1,44 @@
 const express = require('express');
-const { engine } = require('express-handlebars'); // ✅ Đúng cú pháp
+const { engine } = require('express-handlebars');
 const path = require('path');
-const { connectDB } = require("./src/config/data");
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
 
-require("dotenv").config();
+// Ví dụ nếu có hàm connectDB thì import
+const { connectDB } = require("./src/config/data");
 connectDB();
 
-// ✅ Cấu hình Handlebars đúng cách
-app.engine("hbs", engine({
-    extname: ".hbs",
-    runtimeOptions: {
-        allowProtoPropertiesByDefault: true,  
-        allowProtoMethodsByDefault: true
-    }
+// Cấu hình template engine Handlebars
+app.engine('hbs', engine({
+  extname: '.hbs',
+  runtimeOptions: {
+    allowProtoPropertiesByDefault: true,
+    allowProtoMethodsByDefault: true
+  }
 }));
+app.set('view engine', 'hbs');
 
-app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, 'src/resources/views'));
+// **Chỉ định đường dẫn tới views**
+// Vì đang ở ngoài `src/`, ta dùng: path.join(__dirname, 'src', 'resources', 'views')
+app.set('views', path.join(__dirname, 'src', 'resources', 'views'));
 
-// Middleware để xử lý dữ liệu từ form
+// Cho phép Express đọc dữ liệu form
 app.use(express.urlencoded({ extended: true }));
 
-// Hỗ trợ DELETE, PUT bằng method override
-const methodOverride = require("method-override");
-app.use(methodOverride("_method"));
+// Nếu cần method-override:
+const methodOverride = require('method-override');
+app.use(methodOverride('_method'));
+
+// **Quan trọng**: phục vụ file tĩnh (public) nằm trong `src/`
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
 // Import routes
-const route = require('./src/routes/index.route');
+const route = require('./src/routes/index.route'); 
 route(app);
 
-// Chạy server
+// Khởi chạy server
 app.listen(port, () => {
-    console.log(`App running at http://localhost:${port}`);
+  console.log(`App running at http://localhost:${port}`);
 });
