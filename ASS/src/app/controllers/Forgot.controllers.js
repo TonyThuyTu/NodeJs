@@ -34,7 +34,7 @@ class UserForgot {
                 from: "tonynguyen@gmail.com",
                 to: email,
                 subject: "Reset Your Password",
-                text: `Hello ${user.username},\n\nYour password is: ${user.password}\n\nPlease change it after logging in.`,
+                text: `Xin chào ${user.username},\n\nMật khẩu của bạn là: ${user.password}\n\n Vui lòng hãy nhấn đường link trên và thay đổi mật khẩu!`,
             };
 
             // Gửi email
