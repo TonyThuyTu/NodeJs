@@ -1,57 +1,66 @@
-import jwt from "jsonwebtoken";
-import "dotenv"; // import dotenv to use process.env
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+// Load biến môi trường từ file .env
+dotenv.config();
 
 class Auth {
   static createJWTToken(email) {
-    const payLoad = {
-      email: email,
-    };
+    if (!process.env.SECRET_KEY) {
+      console.error("❌ Lỗi: SECRET_KEY chưa được cấu hình trong .env!");
+      throw new Error("Server error: Missing SECRET_KEY");
+    }
+
+    const payLoad = { email };
 
     const options = {
       expiresIn: "2h",
       algorithm: "HS256",
     };
 
-    const token = jwt.sign(payLoad, process.env.SECRET_KEY, options);
-    console.log(`Token: ${token}`);
-    return token;
+    try {
+      const token = jwt.sign(payLoad, process.env.SECRET_KEY, options);
+      console.log(`✅ Token Created: ${token}`);
+      return token;
+    } catch (err) {
+      console.error("❌ Lỗi khi tạo JWT:", err);
+      throw err;
+    }
   }
 
-  // verify token
-  static verifyJWTToken = (req, res, next) => {
-    // get token from http header Authorization
+  static verifyJWTToken(req, res, next) {
     let token = null;
-    const authHeader = req.headers["authorization"];
-    console.log(`AuthHeader: ${authHeader}`);
-    if (authHeader != null) {
-      token = authHeader && authHeader.split(" ")[1];
-      console.log(`Token from Header: ${token}`);
-    } else {
-      // get token from http cookie
-      token = req.cookies.token;
-      console.log(`Token from Cookie: ${token}`);
-    }
-    if (token == null) return res.status(401).json({ message: "Unauthorized" });
 
+    // Lấy token từ header Authorization hoặc Cookie
+    const authHeader = req.headers["authorization"];
+    if (authHeader) {
+      token = authHeader.split(" ")[1]; // "Bearer <token>"
+    } else if (req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Kiểm tra SECRET_KEY
+    if (!process.env.SECRET_KEY) {
+      console.error("❌ Lỗi: SECRET_KEY chưa được cấu hình!");
+      return res.status(500).json({ message: "Server error: Missing SECRET_KEY" });
+    }
+
+    // Xác thực token
     jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
       if (err) {
-        console.error(err);
+        console.error("❌ Lỗi xác thực JWT:", err);
         return res.status(403).json({ message: "Invalid token" });
-      } else {
-        console.log(`Decoded: ${decoded}`);
-        req.email = decoded.email;
-        console.log(`Email: ${req.email}`);
-        next();
       }
-    });
-  };
 
-  // check permission based on user's role
-  static checkPermission = (role) => {
-    if (role == "admin") {
-    } else {
-    }
-  };
+      req.email = decoded.email;
+      console.log(`✅ Xác thực thành công - Email: ${req.email}`);
+      next();
+    });
+  }
 }
 
-export default Auth;
+module.exports = Auth;

@@ -10,6 +10,6 @@ const router = express.Router();
 // Hiện form đăng nhập
 router.get('/', loginControllers.index);
 // Xử lý đăng nhập
-// router.post('/login', loginControllers.login);
+router.post('/', loginControllers.login);
 
 module.exports = router;

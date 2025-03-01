@@ -1,37 +1,11 @@
-const User = require("../models/user");
+class UserController {
+  profile(req, res) {
+    if (!req.user) {
+      return res.redirect("/login"); // Nếu chưa đăng nhập, chuyển hướng đến trang login
+    }
 
-exports.create = (req, res) => {
-    res.render('userCreate', { title: 'Create User' });
-};
-
-exports.store = (req, res) => {
-    console.log(req.body);
-    res.send("User created successfully!");
-};
-
-exports.show = (req, res) => {
-    const userId = req.params.id;
-    res.render('userDetail', { title: `User ${userId}`, userId });
-};
-
-// Tạo user mới
-exports.createUser = async (req, res) => {
-  const { name, phone, email, password } = req.body;
-  try {
-    const newUser = new User({ name, phone, email, password });
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.render("profile", { title: "Profile", user: req.user });
   }
-};
+}
 
-// Cập nhật user
-exports.updateUser = async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+module.exports = new UserController();

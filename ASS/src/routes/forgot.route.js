@@ -1,12 +1,8 @@
-const express = require('express');
-
-const ForgotControllers = require('../app/controllers/Forgot.controllers');
-
+const express = require("express");
 const router = express.Router();
+const UserForgot = require("../app/controllers/Forgot.controllers");
 
-console.log("ForgotFile", ForgotControllers);
-
-// Hiện form quên mật khẩu
-router.get('/', ForgotControllers.index);
+router.get("/", UserForgot.index); // Hiển thị form
+router.post("/", UserForgot.sendResetLink); // Xử lý gửi email
 
 module.exports = router;

@@ -5,9 +5,9 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title"> TonyNguyen </h5>
-                    <p class="card-text"><strong>Số điện thoại:</strong> 0777527125 </p>
-                    <p class="card-text"><strong>Email:</strong> tunlhpd099442@gmail.com </p>
+                    <h5 class="card-title"> {{user.username}} </h5>
+                    <p class="card-text"><strong>Số điện thoại:</strong> {{user.phone}} </p>
+                    <p class="card-text"><strong>Email:</strong> {{user.email}} </p>
                     <a href="/user/edit" class="btn btn-primary">Chỉnh sửa thông tin</a>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                     <!-- Card Body: Post Content -->
                     <div class="card-body">
                         <!-- Post Image Centered -->
-                        <img src="img/beach holiday.jpg" alt="Beach Holiday" class="d-block mx-auto" width="auto" height="500px">
+                        <img src="/img/beach-holiday.jpg" alt="Beach Holiday" class="d-block mx-auto" width="auto" height="500px">
                         <!-- Post Text -->
                         <p>
                         World's most beautiful car in Curabitur <strong>#test drive booking!</strong>

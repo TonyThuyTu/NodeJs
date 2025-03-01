@@ -1,18 +1,9 @@
 class AuthController {
-
-
-    
-
-
     logout(req, res) {
-        req.session.destroy((err) => {
-            if (err) {
-                console.error('Lỗi khi đăng xuất:', err);
-                return res.redirect('/');
-            }
-            res.redirect('/login'); // Sau khi logout, chuyển về trang login
-        });
+      res.clearCookie("token"); // Xóa cookie chứa token đăng nhập
+      res.redirect("/"); // Chuyển hướng về trang chủ
     }
-}
-
-module.exports = new AuthController();
+  }
+  
+  module.exports = new AuthController();
+  

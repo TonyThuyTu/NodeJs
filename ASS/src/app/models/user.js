@@ -1,11 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const UserSchema = new mongoose.Schema({
-    username: { type: String, required: true, unique: true },
-    phone: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    Date: { type: String, default: Date.now}
-});
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  phone: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+}, { timestamps: true });
 
-module.exports = mongoose.model('User', UserSchema);
+// ✅ Kiểm tra model trước khi tạo lại (tránh OverwriteModelError)
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+
+module.exports = User;

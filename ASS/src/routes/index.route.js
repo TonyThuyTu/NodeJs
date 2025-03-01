@@ -9,10 +9,10 @@ const logoutRouters = require('./auth.route');
 
 function route(app) {
     app.use('/', homeRoutes);
-    app.use('/user', userRoutes);
+    app.use('/profile', userRoutes);
     app.use('/posts', postRoutes);
     app.use('/login', loginRoutes);
-    app.use('/signin', SigninRoutes);
+    app.use('/signup', SigninRoutes);
     app.use('/forgotpass', ForgotPass);
     app.use('/logout', logoutRouters);
 }

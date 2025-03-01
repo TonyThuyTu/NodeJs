@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../../src/app/controllers/user.controller"); 
+const UserController = require("../app/controllers/user.controller");
+const authMiddleware = require("../app/middleware/authMiddleware"); // Middleware kiểm tra đăng nhập
 
-router.post("/", userController.createUser);
-router.put("/:id", userController.updateUser);
+router.get("/", authMiddleware, UserController.profile);
 
 module.exports = router;

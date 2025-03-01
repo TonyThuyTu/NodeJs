@@ -4,7 +4,7 @@ const SiginControllers = require('../app/controllers/sigin.controllers');
 
 const router = express.Router();
 
-// console.log("loginfile", SiginControllers);
+
 
 
 // Hiện form đăng ký
