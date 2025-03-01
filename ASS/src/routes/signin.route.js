@@ -9,7 +9,8 @@ const router = express.Router();
 
 // Hiện form đăng ký
 router.get('/', SiginControllers.index);
-// Xử lý đăng nhập
-// router.post('/login', loginControllers.login);
+// Xử lý đăng ký
+router.post('/',SiginControllers.register);
+
 
 module.exports = router;

@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import "dotenv/config"; // import dotenv to use process.env
+import "dotenv"; // import dotenv to use process.env
 
 class Auth {
   static createJWTToken(email) {
