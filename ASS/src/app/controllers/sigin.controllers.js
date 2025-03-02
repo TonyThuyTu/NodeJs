@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user"); // Đảm bảo đúng đường dẫn
+const User = require("../models/User"); // Đảm bảo đúng đường dẫn
 
 class UserSignup {
   index(req, res) {

@@ -1,40 +1,106 @@
-<div class="container mt-4">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card shadow-lg p-4">
                 <h3 class="text-center mb-4">Chỉnh sửa thông tin cá nhân</h3>
-                <form action="/user/update-profile?_method=PUT" method="POST">
+                <form id="editUserForm" action="/edituser" method="POST" novalidate>
+                    
                     <!-- Tên người dùng -->
                     <div class="mb-3">
                         <label for="username" class="form-label">Tên người dùng</label>
                         <input type="text" class="form-control" id="username" name="username" value="{{user.username}}" required>
+                        <div class="invalid-feedback">Tên không được để trống.</div>
                     </div>
 
                     <!-- Email -->
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" value="{{user.email}}" required>
+                        <div class="invalid-feedback">Vui lòng nhập email hợp lệ.</div>
                     </div>
 
                     <!-- Số điện thoại -->
                     <div class="mb-3">
                         <label for="phone" class="form-label">Số điện thoại</label>
                         <input type="text" class="form-control" id="phone" name="phone" value="{{user.phone}}" required>
+                        <div class="invalid-feedback">Số điện thoại phải có 10 số và bắt đầu bằng 0.</div>
                     </div>
 
                     <!-- Mật khẩu -->
                     <div class="mb-3">
-                        <label for="password" class="form-label">Mật khẩu mới</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <label for="password" class="form-label">Mật khẩu mới (tùy chọn)</label>
+                        <input type="password" class="form-control" id="password" name="password">
+                        <div class="invalid-feedback">Mật khẩu phải có ít nhất 6 ký tự.</div>
+                    </div>
+
+                    <!-- Xác nhận mật khẩu -->
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                        <div class="invalid-feedback">Mật khẩu xác nhận không khớp.</div>
                     </div>
 
                     <!-- Nút cập nhật -->
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
-                        <a href="/user/profile" class="btn btn-secondary">Hủy</a>
+                        <button type="submit" class="btn btn-primary">Cập nhật</button>
+                        <a href="/profile" class="btn btn-secondary">Hủy</a>
                     </div>
+
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById("editUserForm").addEventListener("submit", function(event) {
+    let isValid = true;
+
+    // Lấy input fields
+    const username = document.getElementById("username");
+    const email = document.getElementById("email");
+    const phone = document.getElementById("phone");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmPassword");
+
+    // Reset trạng thái lỗi trước khi kiểm tra
+    document.querySelectorAll(".form-control").forEach(el => el.classList.remove("is-invalid"));
+
+    // Kiểm tra tên người dùng
+    if (username.value.trim() === "") {
+        username.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // Kiểm tra email hợp lệ
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.value)) {
+        email.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // Kiểm tra số điện thoại (10 số, bắt đầu từ 0)
+    const phonePattern = /^0\d{9}$/;
+    if (!phonePattern.test(phone.value)) {
+        phone.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // Kiểm tra mật khẩu (nếu nhập)
+    if (password.value && password.value.length < 6) {
+        password.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // Kiểm tra xác nhận mật khẩu (nếu nhập)
+    if (password.value && confirmPassword.value !== password.value) {
+        confirmPassword.classList.add("is-invalid");
+        isValid = false;
+    }
+
+    // Nếu có lỗi, không gửi form
+    if (!isValid) {
+        event.preventDefault();
+    }
+});
+</script>

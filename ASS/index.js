@@ -1,13 +1,13 @@
 const express = require('express');
 const { engine } = require('express-handlebars');
 const path = require('path');
-require('dotenv').config();
+
 const cookieParser = require("cookie-parser");
 const authMiddleware = require("./src/app/middleware/authMiddleware");
 
 const app = express();
 const port = 3000;
-
+require('dotenv').config();
 // Import kết nối MongoDB
 const { connectDB } = require("./src/config/data");
 
