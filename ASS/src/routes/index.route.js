@@ -7,6 +7,7 @@ const SigninRoutes = require('./signin.route');
 const ForgotPass = require('./forgot.route');
 const logoutRouters = require('./auth.route');
 const editUserRoutes = require('./editUser.route');
+const editPost = require('./user.route');
 
 function route(app) {
 
@@ -22,6 +23,7 @@ function route(app) {
     app.use('/forgotpass', ForgotPass);
     app.use('/logout', logoutRouters);
     app.use('/edit', editUserRoutes);
+    app.use('/editpost', editPost)
 }
 
 module.exports = route;

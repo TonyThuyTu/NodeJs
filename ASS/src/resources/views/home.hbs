@@ -1,20 +1,22 @@
+{{#each posts}}
 <div class="card mb-4">
   <!-- Card Header: Author and Publish Info -->
   <div class="card-header">
-    <h5 class="mb-0">Janice Griffith</h5>
-    <small class="text-muted">Published: June 2, 2018 7:19 PM</small>
+    <h5 class="mb-0">{{this.userId.username}}</h5> <!-- Lấy username từ userId -->
+    <small class="text-muted">Published: {{this.createdAt}}</small>
   </div>
+
   <!-- Card Body: Post Content -->
   <div class="card-body">
-    <!-- Post Image Centered -->
-    <img src="/img/beach-holiday.jpg" alt="image" class="d-block mx-auto" width="auto" height="500px">
+    <!-- Post Image -->
+    {{#if this.image}}
+      <img src="{{this.image}}" alt="Post Image" class="d-block mx-auto" width="auto" height="500px">
+    {{/if}}
+
     <!-- Post Text -->
-    <p>
-      World's most beautiful car in Curabitur <strong>#test drive booking!</strong>
-      The most beautiful car available in America and Saudi Arabia.
-      You can book your test drive by our official website.
-    </p>
-    <!-- Reactions (Likes, Comments, etc.) -->
+    <p>{{this.title}}</p>
+
+    <!-- Reactions -->
     <div class="d-flex align-items-center mb-3">
       <button class="btn btn-outline-primary btn-sm mr-2">👍 2.2k</button>
       <button class="btn btn-outline-secondary btn-sm mr-2">💬 200</button>
@@ -22,3 +24,4 @@
     </div>
   </div>
 </div>
+{{/each}}

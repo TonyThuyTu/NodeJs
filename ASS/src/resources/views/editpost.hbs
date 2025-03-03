@@ -1,26 +1,47 @@
 <div class="container mt-5">
-  <div class="card mx-auto" style="max-width: 600px;">
-    <div class="card-body">
-      <h3 class="card-title text-center">Chỉnh sửa bài viết</h3>
-      <form action="/post/edit/{{post.postId}}" method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="title">Tiêu đề bài viết</label>
-          <input type="text" id="title" name="title" class="form-control" value="{{post.title}}" required>
+    <div class="card mx-auto shadow-lg" style="max-width: 600px;">
+        <div class="card-body">
+            <h3 class="card-title text-center">✏️ Chỉnh sửa bài viết</h3>
+          <form action="/post/update/{{post._id}}" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="_method" value="PUT"> <!-- Đảm bảo gửi PUT request -->
+
+                <!-- Tiêu đề bài viết -->
+                <div class="form-group">
+                    <label for="title" class="font-weight-bold">📝 Tiêu đề bài viết</label>
+                    <input type="text" id="title" name="title" class="form-control" value="{{post.title}}" required>
+                </div>
+
+                <!-- Hình ảnh hiện tại -->
+                <div class="form-group">
+                    <label class="font-weight-bold">🖼 Hình ảnh hiện tại</label>
+                    <div class="mb-3 text-center">
+                        <img id="previewImage" src="{{post.image}}" alt="Bài viết" class="img-fluid rounded shadow"
+                            style="max-height: 300px; object-fit: cover;">
+                    </div>
+                    <input type="file" id="image" name="image" class="form-control-file" accept="image/*">
+                </div>
+
+                <!-- Nút điều khiển -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="/profile" class="btn btn-secondary">🚫 Hủy</a>
+                    <button type="submit" class="btn btn-primary">✅ Cập nhật</button>
+                </div>
+            </form>
         </div>
-        <div class="form-group">
-          <label for="image">Hình ảnh hiện tại</label>
-          <div class="mb-2">
-            <img src="img/beach holiday.jpg" alt="Bài viết" class="img-fluid rounded">
-          </div>
-          <input type="file" id="image" name="image" class="form-control-file" accept="image/*">
-        </div>
-        
-        <!-- Nút Hủy (bên trái) và Cập nhật (bên phải) -->
-        <div class="d-flex justify-content-between">
-          <a href="/profile" class="btn btn-secondary">Hủy</a>
-          <button type="submit" class="btn btn-primary">Cập nhật bài viết</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
+
+<script>
+    document.getElementById("image").addEventListener("change", function (event) {
+        const previewImage = document.getElementById("previewImage");
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>

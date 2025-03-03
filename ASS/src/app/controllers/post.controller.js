@@ -1,61 +1,43 @@
-const { getDB } = require("../../config/data");
-const { ObjectId } = require("mongodb");
 const Post = require("../models/post");
+const { ObjectId } = require("mongodb");
 
-class PostController {
-    list(req, res) {
-        res.json("post/index", { title: "All Posts" });
-    }
-
-    detail(req, res) {
-        const postId = req.params.id;
-        res.render("postDetail", { title: `Post ${postId}`, postId });
-    }
-}
-
-const postController = new PostController();
-
-// API CRUD
-
-// ✅ Lấy danh sách tất cả bài viết
+// ✅ Lấy danh sách bài viết
 const getAllPosts = async (req, res) => {
     try {
-        const db = getDB(); 
-        const posts = await Post.findAll(db); // Gọi hàm `findAll(db)`
-        
-        console.log("📌 Danh sách bài viết:", posts); // Kiểm tra kết quả
-
-        res.render("post/index", { posts, title: "Danh sách bài viết" });
+        console.log("📥 Đang lấy danh sách bài viết...");
+        const posts = await Post.find().sort({ createdAt: -1 });
+        console.log("✅ Danh sách bài viết:", posts);
+        res.render("profile", { posts, title: "Trang Chủ" });
     } catch (error) {
         console.error("🚨 Lỗi khi lấy danh sách bài viết:", error);
         res.status(500).send("Lỗi khi lấy danh sách bài viết");
     }
 };
 
-
-// ✅ Thêm bài viết mới
+// ✅ Thêm bài viết mới (chỉ ảnh & tiêu đề)
 const createPost = async (req, res) => {
     try {
-        const db = getDB(); // Lấy kết nối MongoDB
+        console.log("📝 Dữ liệu nhận được:", req.body);
+        console.log("👤 Người đăng bài:", req.user);
 
-        // Kiểm tra dữ liệu đầu vào
-        if (!req.body.title || !req.body.content) {
-            return res.status(400).json({ message: "Tiêu đề và nội dung không được để trống" });
+        if (!req.body.title) {
+            console.log("⚠️ Tiêu đề không được để trống!");
+            return res.status(400).json({ message: "Tiêu đề không được để trống" });
         }
 
-        const newPost = {
+        const imagePath = req.file ? "/img/" + req.file.filename : null;
+        console.log("📸 Đường dẫn ảnh:", imagePath);
+
+        const newPost = new Post({
             title: req.body.title,
-            content: req.body.content,
+            image: imagePath,
+            userId: req.user._id,
             createdAt: new Date()
-        };
+        });
 
-        // Thêm bài viết vào database
-        const result = await db.collection("posts").insertOne(newPost);
-
-        console.log("📌 Bài viết mới:", result.insertedId);
-        res.redirect("/posts");
-        // res.status(201).json({ message: "Thêm bài viết thành công!", postId: result.insertedId });
-
+        await newPost.save();
+        console.log("✅ Bài viết đã được lưu:", newPost);
+        res.redirect("/profile");
     } catch (error) {
         console.error("🚨 Lỗi khi thêm bài viết:", error);
         res.status(500).json({ message: "Lỗi server" });
@@ -65,11 +47,16 @@ const createPost = async (req, res) => {
 // ✅ Lấy bài viết theo ID
 const getPostById = async (req, res) => {
     try {
-        const id = new ObjectId(req.params.id);
-        const post = await Post.findById(db, id);
-        if (!post) return res.status(404).json({ message: "Không tìm thấy bài viết" });
-        res.json(post);
+        console.log("🔍 Đang tìm bài viết với ID:", req.params.id);
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            console.log("❌ Không tìm thấy bài viết!");
+            return res.status(404).json({ message: "Không tìm thấy bài viết" });
+        }
+        console.log("✅ Tìm thấy bài viết:", post);
+        res.render("postDetail", { title: post.title, post });
     } catch (error) {
+        console.error("🚨 Lỗi khi lấy bài viết:", error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -77,78 +64,109 @@ const getPostById = async (req, res) => {
 // ✅ Hiển thị form chỉnh sửa bài viết
 const editPostForm = async (req, res) => {
     try {
-        const db = getDB();
         let { id } = req.params;
+        console.log("✏️ Hiển thị form chỉnh sửa cho bài viết ID:", id);
 
-        console.log("📌 ID nhận được:", id);
-
-        // ✅ Kiểm tra ID hợp lệ
         if (!ObjectId.isValid(id)) {
-            console.log("❌ ID không hợp lệ!");
+            console.log("⚠️ ID không hợp lệ!");
             return res.status(400).send("ID không hợp lệ");
         }
 
-        const post = await Post.findById(db, new ObjectId(id));
+        const post = await Post.findById(id);
         if (!post) {
             console.log("❌ Bài viết không tồn tại!");
             return res.status(404).send("Bài viết không tồn tại");
         }
 
-        res.render("post/edit", { post });
+        console.log("✅ Đã tìm thấy bài viết để chỉnh sửa:", post);
+        res.render("editpost", { post, title: "Chỉnh sửa bài viết" });
     } catch (error) {
-        console.error("🚨 Lỗi server:", error);
+        console.error("🚨 Lỗi khi hiển thị form chỉnh sửa:", error);
         res.status(500).send("Lỗi server");
     }
 };
 
-// ✅ Cập nhật bài viết theo ID
+// ✅ Cập nhật bài viết
 const updatePost = async (req, res) => {
     try {
-        const db = getDB(); 
-        let { id } = req.params;
+        const { id } = req.params;
+        const userId = req.user._id;
 
-        // ✅ Kiểm tra ID hợp lệ
+        console.log("🔍 ID bài viết:", id);
+        console.log("👤 ID người dùng:", userId);
+        console.log("📩 Dữ liệu nhận được:", req.body);
+        console.log("📷 File upload:", req.file);
+
         if (!ObjectId.isValid(id)) {
+            console.log("⛔ ID không hợp lệ!");
             return res.status(400).send("ID không hợp lệ");
         }
 
-        const result = await Post.update(db, new ObjectId(id), req.body);
-        if (result.matchedCount === 0) {
+        const post = await Post.findById(id);
+        if (!post) {
+            console.log("❌ Không tìm thấy bài viết!");
             return res.status(404).send("Bài viết không tồn tại");
         }
 
-        console.log("✅ Cập nhật thành công, chuyển hướng...");
-        res.redirect("/posts");
+        if (post.userId.toString() !== userId.toString()) {
+            console.log("⛔ Không có quyền chỉnh sửa bài viết!");
+            return res.status(403).send("Bạn không có quyền chỉnh sửa bài viết này!");
+        }
+
+        let updateData = { title: req.body.title || post.title };
+
+        if (req.file) {
+            updateData.image = "/img/" + req.file.filename;
+            console.log("✅ Cập nhật ảnh:", updateData.image);
+        } else {
+            updateData.image = post.image;
+        }
+
+        const updatedPost = await Post.findByIdAndUpdate(id, updateData, { new: true });
+
+        console.log("✅ Bài viết sau khi cập nhật:", updatedPost);
+
+        res.redirect("/profile");
     } catch (error) {
-        console.error("🚨 Lỗi cập nhật bài viết:", error);
+        console.error("🚨 Lỗi khi cập nhật bài viết:", error);
         res.status(500).send("Lỗi server");
     }
 };
 
-// ✅ Xóa bài viết theo ID
+
+// ✅ Xóa bài viết
 const deletePost = async (req, res) => {
     try {
-        const db = getDB(); 
-        let { id } = req.params;
+        const { id } = req.params;
+        const userId = req.user._id;
+
+        console.log("🗑️ Đang xóa bài viết ID:", id);
 
         if (!ObjectId.isValid(id)) {
-            return res.status(400).send("ID không hợp lệ");
+            console.log("⚠️ ID không hợp lệ!");
+            return res.status(400).json({ message: "ID không hợp lệ" });
         }
 
-        await Post.delete(db, new ObjectId(id));
-        res.redirect("/posts");
+        const post = await Post.findOneAndDelete({ _id: id, userId });
+
+        if (!post) {
+            console.log("❌ Bài viết không tồn tại hoặc bạn không có quyền xóa!");
+            return res.status(404).json({ message: "Bài viết không tồn tại hoặc bạn không có quyền xóa!" });
+        }
+
+        console.log("✅ Bài viết đã được xóa thành công:", post);
+        res.json({ message: "Xóa bài viết thành công!" });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("🚨 Lỗi khi xóa bài viết:", error);
+        res.status(500).json({ message: "Lỗi server!" });
     }
 };
 
-// ✅ Export đúng cách
-module.exports = { 
-    postController,
-    getAllPosts, 
-    createPost, 
-    getPostById, 
-    updatePost, 
-    deletePost, 
+module.exports = {
+    getAllPosts,
+    createPost,
+    getPostById,
+    updatePost,
+    deletePost,
     editPostForm
 };

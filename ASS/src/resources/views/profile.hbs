@@ -4,7 +4,7 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-center">
-                    <h5 class="card-title"> {{user.username}} </h5>
+                    <h5 class="card-title"><strong>Xin chào:</strong> {{user.username}} </h5>
                     <p class="card-text"><strong>Số điện thoại:</strong> {{user.phone}} </p>
                     <p class="card-text"><strong>Email:</strong> {{user.email}} </p>
                     <a href="/edit" class="btn btn-primary">Chỉnh sửa thông tin</a>
@@ -15,8 +15,15 @@
         <div class="col-md-9">
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5 class="card-title">Đăng bài viết</h5>
-                    <form action="/profile" method="POST" enctype="multipart/form-data">
+                    <h5 class="card-title">📝 Đăng bài viết</h5>
+                    {{#if error}}
+                        <div class="alert alert-danger">{{error}}</div>
+                    {{/if}}
+                    {{#if success}}
+                        <div class="alert alert-success">{{success}}</div>
+                    {{/if}}
+                    <form action="/profile" method="POST" enctype="multipart/form-data" id="postForm">
+                        <input type="hidden" name="userId" value="{{user._id}}">  {{! ✅ Đảm bảo userId được gửi }}
                         <div class="mb-3">
                             <input type="text" name="title" class="form-control" placeholder="Nhập tiêu đề bài viết" required>
                         </div>
@@ -28,32 +35,55 @@
                 </div>
             </div>
 
-            {{#each posts}}
-            <div class="card mb-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-0">{{this.userId.username}}</h5>
-                        <small class="text-muted">Published: {{this.createdAt}}</small>
-                    </div>
-                    <div>
-                        <a href="/posts/edit/{{this._id}}" class="btn btn-sm btn-warning">✏️ Sửa</a>
-                        <form action="/posts/delete/{{this._id}}" method="POST" style="display:inline;">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirmDelete()">🗑️ Xóa</button>
-                        </form>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <img src="{{this.image}}" alt="Ảnh bài viết" class="d-block mx-auto" height="500px">
-                    <p>{{this.title}}</p>
-                </div>
-            </div>
-            {{/each}}
+         {{#each posts}}
+<div class="card mb-4" id="post-{{this._id}}">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            <small class="text-muted">Published: {{this.createdAt}}</small>
+        </div>
+        <div>
+            <a href="/posts/edit/{{this._id}}" class="btn btn-sm btn-warning">✏️ Sửa</a>
+            <button onclick="deletePost('{{this._id}}')" class="btn btn-sm btn-danger">🗑️ Xóa</button>
         </div>
     </div>
+    <div class="card-body">
+        <img src="{{this.image}}" alt="Ảnh bài viết" class="d-block mx-auto" height="500px" width="750px">
+        <p>{{this.title}}</p>
+    </div>
+
+    <div class="d-flex align-items-center mb-3">
+        <button class="btn btn-outline-primary btn-sm mr-2">👍 2.2k</button>
+        <button class="btn btn-outline-secondary btn-sm mr-2">💬 200</button>
+        <button class="btn btn-outline-success btn-sm">🔄 Share</button>
+    </div>
 </div>
+{{/each}}
 
 <script>
-    function confirmDelete() {
-        return confirm("❗ Bạn có chắc chắn muốn xóa bài viết này không?");
+async function deletePost(postId) {
+    if (!confirm("❗ Bạn có chắc chắn muốn xóa bài viết này không?")) return;
+
+    try {
+        const response = await fetch(`/posts/${postId}`, { method: "DELETE" });
+
+        const result = await response.json();
+        if (response.ok) {
+            alert(result.message);
+            document.getElementById(`post-${postId}`).remove(); // Xóa bài viết khỏi giao diện
+        } else {
+            alert("Lỗi: " + result.message);
+        }
+    } catch (error) {
+        console.error("🚨 Lỗi khi xóa bài viết:", error);
+        alert("Lỗi server, thử lại sau!");
     }
+}
+
+// Ẩn thông báo sau 3 giây
+document.addEventListener("DOMContentLoaded", function() {
+    const alertSuccess = document.querySelector(".alert-success");
+    if (alertSuccess) {
+        setTimeout(() => alertSuccess.style.display = "none", 3000);
+    }
+});
 </script>
